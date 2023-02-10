@@ -12,3 +12,7 @@ class Node:
     def costTo(self, node):
         return self.network[node]
 
+    # Set the cost to specified node from this node
+    def setCost(self, node, cost):
+        self.network[node] = cost
+
