@@ -5,7 +5,10 @@ class Node:
         self.network = network      # This is a dictionary where the keys are node names ("u","v",etc.) and values are costs (1,20,9999,etc.)
 
     def __str__(self):
-        return self.name + "'s network is: " + str(self.network)
+        outputString = ""
+        for item in self.network:
+            outputString += (item + ":" + str(self.network[item]) + ", ")
+        return outputString[:-2]   # Returns created string put cuts off extra comma
 
     # Gives the cost from this node to others on the network
     # This will be altered by the routing algorithm
