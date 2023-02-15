@@ -2,6 +2,7 @@
 from NodeClass import Node
 import pandas as pd
 from sys import *
+from copy import deepcopy
 
 # Function definitions
 # Finds the node in a list with lest cost to source
@@ -11,6 +12,13 @@ def minNode(source, nodeList):
         if (node.costTo(source) < currNode.costTo(source)):
             currNode = node
     return currNode
+
+def minCost(source, dest):
+    leastCost = source.costTo(dest.name)
+    for node in source.network:
+        if ((source.costTo(node) +  dest.costTo(node)) < leastCost):
+            leastCost = (source.costTo(node) + dest.costTo(node))
+    return leastCost
 
 # Updates the list of node links by replacing outdated links if needed
 def updateLinks(links, source, dest):
@@ -53,7 +61,7 @@ if (len(argv) == 2):
     
     # Make two copies of fullNetwork
     networkDijkstra = fullNetwork.copy()
-    networkBellman = fullNetwork.copy()
+    networkBellman = deepcopy(fullNetwork)
 
     # Ask user for source node
     source = input("Please, provide the source node: ")
@@ -97,16 +105,17 @@ if (len(argv) == 2):
 
     # Calculate distance vectors for each node
     # Bellman-Ford equation
-    for node in fullNetwork:
-        for node1 in fullNetwork[node].network:
-            print(fullNetwork[node].costTo(node1))
+    for node in networkBellman:
+        for node1 in networkBellman[node].network:
+            leastCost = minCost(networkBellman[node], networkBellman[node1])
+            networkBellman[node].setCost(node1, leastCost)
 
     # Print distance vectors for each node
-    for node in fullNetwork:
-        print("Distance vector for node {}:".format(node))
-        for node1 in fullNetwork[node].network:
-            print(fullNetwork[node].costTo(node1))
-        
+    for node in networkBellman:
+        print("Distance vector for node {}:".format(node), end=" ")
+        for node1 in networkBellman[node].network:
+            print(networkBellman[node].costTo(node1), end=" ")
+        print()
 
 else:
     print("Usage: python {} <CSV filename>\n".format(argv[0]))
