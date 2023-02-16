@@ -5,7 +5,7 @@ from sys import *
 from copy import deepcopy
 
 # Function definitions
-# Finds the node in a list with lest cost to source
+# Finds the node in a list with least cost to source
 def minNode(source, nodeList):
     currNode = nodeList[0]
     for node in nodeList:
@@ -20,24 +20,25 @@ def minCost(source, dest):
             leastCost = (source.costTo(node) + dest.costTo(node))
     return leastCost
 
-# Updates the list of node links by replacing outdated links if needed
-def updateLinks(links, source, dest):
-    for i in range(len(links)):
-        if links[i][1] == dest:
-            links[i] = (source, dest)
-            return links
-    links.append((source, dest))
-    return links
+# Calculates the shortest path nodes by tracing the predecessor nodes for entire network
+# Returns results as an array of paths
+def shortestPath(network, source, Nprime):
+    resultArray = []
+    for node in Nprime:
+        if node != source:
+            result = node
+            while node != source:
+                if network[node].predecessor != source:
+                    result = network[node].predecessor + result
+                    node = network[node].predecessor
+                else:
+                    result = source + result
+                    break
+            resultArray.append(result)
+    return resultArray
 
-# Outputs the shortest path tree given a base tree and list of node links
-def pathTree(fullTree, links):
-    finishedTree = []
-    for i in range(len(fullTree)):
-        print("temp")  # Finish later
-    return finishedTree
 
-
-# Import CSV data and convert into Node objects
+# Import CSV data and convert into Node objects (using pandas)
 if (len(argv) == 2):
     filename = argv[1]
 
@@ -60,7 +61,7 @@ if (len(argv) == 2):
         exit(0)
     
     # Make two copies of fullNetwork
-    networkDijkstra = fullNetwork.copy()
+    networkDijkstra = deepcopy(fullNetwork)
     networkBellman = deepcopy(fullNetwork)
 
     # Ask user for source node
@@ -70,12 +71,12 @@ if (len(argv) == 2):
     # Dijkstra's Algorithm -- Add shortest path tree!
     # initialize N-prime
     Nprime = [source]
-    fullTree = []
-    links = []
+    # Set all predecessors to source to start
+    for node in networkDijkstra:
+        networkDijkstra[node].predecessor = source
     # While not all nodes are in N-prime
     while (len(networkDijkstra) != len(Nprime)):
         availableNodes = []
-        currTree = source
         # Make list of nodes not in N-prime
         for node in networkDijkstra:
             if node not in Nprime:
@@ -84,7 +85,6 @@ if (len(argv) == 2):
         currNode = minNode(source, availableNodes)
         # Add "current node" to N-prime
         Nprime.append(currNode.name)
-        currTree += currNode.name
         # Check all other nodes in network
         for node in currNode.network:
             # If node is adjacent to "current node" and not in N-prime 
@@ -93,12 +93,11 @@ if (len(argv) == 2):
                 # If the cost using this "current node" is cheaper than current cost update it
                 if possCost < networkDijkstra[source].costTo(node):
                     networkDijkstra[source].setCost(node, possCost)
-                    links = updateLinks(links, currNode.name, node)
-        fullTree.append(currTree)
+                    networkDijkstra[node].predecessor = currNode.name
 
     # Output Dijsktra's results
     print("Shortest path tree for node {}:".format(source))
-    print(pathTree(fullTree, links))
+    print(shortestPath(networkDijkstra, source, Nprime))
     print("Costs of the least-cost paths for node {}:".format(source))
     print(networkDijkstra[source])
     print()

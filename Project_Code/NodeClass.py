@@ -3,6 +3,7 @@ class Node:
     def __init__(self, name, network):
         self.name = name            # This is the name of the node ("u","v",etc.)
         self.network = network      # This is a dictionary where the keys are node names ("u","v",etc.) and values are costs (1,20,9999,etc.)
+        self.predecessor = name
 
     def __str__(self):
         outputString = ""
