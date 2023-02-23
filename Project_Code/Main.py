@@ -104,8 +104,11 @@ if (len(argv) == 2):
 
     # Calculate distance vectors for each node
     # Bellman-Ford equation
+    # iterates through each node in network
     for node in networkBellman:
+        # iterates through each neighbor of the node
         for node1 in networkBellman[node].network:
+            # finds the least cost to neighbor and sets that as the new cost
             leastCost = minCost(networkBellman[node], networkBellman[node1])
             networkBellman[node].setCost(node1, leastCost)
 
